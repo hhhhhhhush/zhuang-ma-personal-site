@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeading from '../components/PageHeading.astro';
+import { profile, socials } from '../lib/content';
+---
+
+<Base title="Contact · 联系" description={`联系 ${profile.nameEn}，交流想法与合作可能。`}>
+  <PageHeading
+    label="SAY HELLO"
+    title="Let’s start a conversation."
+    description="关于学习、创造，或只是想说一声你好。好的交流，总是值得期待。"
+  />
+  <section class="contact-block">
+    <p class="eyebrow">EMAIL / 公开邮箱</p>
+    {profile.email ? (
+      <a class="contact-email" href={`mailto:${profile.email}`}>
+        {profile.email} ↗
+      </a>
+    ) : (
+      <>
+        <h2>联系方式，即将补充。</h2>
+        <p>
+          公开邮箱尚未设置。站点所有者可在 Pages CMS
+          的「个人资料」中填写，保存并重新部署后即在此显示。
+        </p>
+      </>
+    )}
+  </section>
+  <section class="contact-block">
+    <p class="eyebrow">ELSEWHERE / 在别处</p>
+    <div class="footer-links">
+      {profile.github && (
+        <a href={profile.github} target="_blank" rel="noopener noreferrer">
+          GitHub ↗
+        </a>
+      )}
+      {socials.map((s) => (
+        <a href={s.url} target="_blank" rel="noopener noreferrer">
+          {s.label} ↗
+        </a>
+      ))}
+    </div>
+    {!profile.github && socials.length === 0 && (
+      <p>公开社交链接尚未设置。这里不会使用猜测的账号或无效链接。</p>
+    )}
+  </section>
+  <p class="small-note">本网站不收集表单信息。设置邮箱后，邮件链接会使用你的本地邮件客户端。</p>
+</Base>

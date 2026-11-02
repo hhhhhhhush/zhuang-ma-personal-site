@@ -1,0 +1,38 @@
+---
+import { url, dateLabel, type Writing } from '../lib/content';
+interface Props {
+  entry: Writing;
+  kind?: 'blog' | 'knowledge';
+}
+const { entry, kind = 'blog' } = Astro.props;
+---
+
+<article class="post-card">
+  <a class="post-card-link" href={url(`/${kind}/${entry.id}/`)}>
+    {entry.data.cover && (
+      <img
+        class="card-cover"
+        src={url(entry.data.cover)}
+        alt=""
+        width="720"
+        height="420"
+        loading="lazy"
+        decoding="async"
+      />
+    )}
+    <div class="post-meta">
+      <span>{entry.data.category}</span>
+      <time datetime={entry.data.date.toISOString()}>{dateLabel(entry.data.date)}</time>
+    </div>
+    <h3>
+      {entry.data.title}
+      <span aria-hidden="true">↗</span>
+    </h3>
+    <p>{entry.data.description}</p>
+    <div class="tags">
+      {entry.data.tags.map((tag) => (
+        <span>#{tag}</span>
+      ))}
+    </div>
+  </a>
+</article>

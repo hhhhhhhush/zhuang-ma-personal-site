@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeading from '../components/PageHeading.astro';
+import { resources, site, url } from '../lib/content';
+const categories = [...new Set([...site.resourceCategories, ...resources.map((r) => r.category)])];
+---
+
+<Base title="Links · 资源" description="值得收藏的工具、网站与学习资源。">
+  <PageHeading
+    label="THE BOOKMARK SHELF"
+    title="Good things, collected."
+    description="一些值得留下的互联网角落。工具、阅读与灵感，按需取用。"
+  />
+  {categories.map((category) => (
+    <section class="resource-section">
+      <h2>{category}</h2>
+      <div class="resource-grid">
+        {resources
+          .filter((r) => r.category === category)
+          .map((r) => (
+            <a class="resource-card" href={r.url} target="_blank" rel="noopener noreferrer">
+              <span class="resource-icon">
+                {r.iconImage || r.icon.startsWith('/') || r.icon.startsWith('https://') ? (
+                  <img
+                    src={url(r.iconImage || r.icon)}
+                    width="28"
+                    height="28"
+                    alt=""
+                    loading="lazy"
+                  />
+                ) : (
+                  r.icon
+                )}
+              </span>
+              <div>
+                <h3>
+                  {r.name} <span>↗</span>
+                </h3>
+                <p>{r.description}</p>
+                {r.recommended && <span class="small-note">✳ 推荐</span>}
+              </div>
+            </a>
+          ))}
+      </div>
+      {!resources.some((r) => r.category === category) && (
+        <p class="small-note">这个书架还留有空位，等待下一次发现。</p>
+      )}
+    </section>
+  ))}
+</Base>

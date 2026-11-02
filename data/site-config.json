@@ -1,0 +1,27 @@
+{
+  "name": "Zhuang Ma",
+  "description": "Zhuang Ma 的个人数字空间，记录学习、技术、思考与创造。",
+  "logo": "",
+  "favicon": "/favicon.svg",
+  "defaultAvatar": "/images/avatar/monogram.svg",
+  "seoTitle": "Zhuang Ma — A space for curious minds",
+  "ogImage": "/images/social-card.png",
+  "language": "zh-CN",
+  "theme": "system",
+  "copyright": "记录成长，保持好奇。",
+  "knowledgeCategories": [
+    "AI 与人工智能",
+    "编程与开发",
+    "技术研究",
+    "学习笔记",
+    "工具与资源",
+    "经验总结"
+  ],
+  "resourceCategories": [
+    "AI Tools",
+    "Developer Tools",
+    "Learning Resources",
+    "Useful Websites",
+    "Design Resources"
+  ]
+}

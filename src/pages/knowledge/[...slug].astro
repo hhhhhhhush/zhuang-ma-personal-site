@@ -1,0 +1,10 @@
+---
+import Writing from '../../layouts/Writing.astro';
+import { notes } from '../../lib/content';
+export async function getStaticPaths() {
+  return (await notes()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+
+<Writing entry={entry} entries={await notes()} kind="knowledge" />

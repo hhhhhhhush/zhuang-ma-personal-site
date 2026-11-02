@@ -1,0 +1,164 @@
+---
+import '../styles/global.css';
+import { profile, site, socials, navigation, url } from '../lib/content';
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: boolean;
+  noindex?: boolean;
+}
+const {
+  title = site.seoTitle,
+  description = site.description,
+  image = site.ogImage,
+  article = false,
+  noindex = false,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const pageTitle = title === site.seoTitle ? title : `${title} — ${site.name}`;
+---
+
+<!doctype html>
+<html lang={site.language} data-default-theme={site.theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    {image && <meta property="og:image" content={new URL(url(image), Astro.site)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={new URL(url(image), Astro.site)} />}
+    <link rel="icon" href={url(site.favicon)} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${site.name} RSS`}
+      href={url('/rss.xml')}
+    />
+    <script is:inline>
+      try {
+        const preferred =
+          localStorage.getItem('theme') || document.documentElement.dataset.defaultTheme;
+        document.documentElement.dataset.theme =
+          preferred === 'system'
+            ? matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+            : preferred;
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">
+      跳到正文
+    </a>
+    <header class="site-header shell">
+      <a class="wordmark" href={url('/')}>
+        {site.logo && <img src={url(site.logo)} width="28" height="28" alt="" />}
+        {site.name}
+        <span>.</span>
+      </a>
+      <nav aria-label="主要导航" id="navigation">
+        {navigation.map((item) => (
+          <a
+            href={url(item.path)}
+            aria-current={Astro.url.pathname === url(item.path) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+      <div class="header-controls">
+        <button class="theme-toggle icon-button" aria-label="切换深浅主题" title="切换深浅主题">
+          <span aria-hidden="true">◐</span>
+        </button>
+        <button
+          class="menu-toggle icon-button"
+          aria-label="打开导航菜单"
+          aria-expanded="false"
+          aria-controls="navigation"
+        >
+          <span aria-hidden="true">☰</span>
+        </button>
+      </div>
+    </header>
+    <main id="main" class="shell">
+      <slot />
+    </main>
+    <footer class="site-footer shell">
+      <div>
+        <a class="wordmark" href={url('/')}>
+          {site.name}.
+        </a>
+        <p>{site.copyright}</p>
+      </div>
+      <div class="footer-links">
+        {profile.github && (
+          <a href={profile.github} target="_blank" rel="noopener noreferrer">
+            GitHub ↗
+          </a>
+        )}
+        {profile.email && <a href={`mailto:${profile.email}`}>Email ↗</a>}
+        {socials.map((s) => (
+          <a href={s.url} target="_blank" rel="noopener noreferrer">
+            {s.label} ↗
+          </a>
+        ))}
+        <a href={url('/contact/')}>Contact ↗</a>
+        <a href={url('/rss.xml')}>RSS ↗</a>
+      </div>
+      <div class="footer-bottom">
+        <span>
+          © {new Date().getFullYear()} {site.name}
+        </span>
+        <span>Made with intention. Built with Astro.</span>
+        <a href={url('/admin/')}>内容管理 ↗</a>
+      </div>
+    </footer>
+    <script>
+      const themeButton = document.querySelector<HTMLButtonElement>('.theme-toggle');
+      function syncTheme() {
+        themeButton?.setAttribute(
+          'aria-label',
+          document.documentElement.dataset.theme === 'dark' ? '切换到浅色主题' : '切换到深色主题',
+        );
+      }
+      syncTheme();
+      themeButton?.addEventListener('click', () => {
+        const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = theme;
+        try {
+          localStorage.setItem('theme', theme);
+        } catch {
+          /* theme still works without storage */
+        }
+        syncTheme();
+      });
+      const menu = document.querySelector<HTMLButtonElement>('.menu-toggle');
+      menu?.addEventListener('click', () => {
+        const open = menu.getAttribute('aria-expanded') !== 'true';
+        menu.setAttribute('aria-expanded', String(open));
+        menu.setAttribute('aria-label', open ? '关闭导航菜单' : '打开导航菜单');
+        document.querySelector('#navigation')?.classList.toggle('is-open', open);
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && menu?.getAttribute('aria-expanded') === 'true') {
+          menu.click();
+          menu.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

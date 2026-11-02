@@ -1,0 +1,163 @@
+---
+import PostCard from './PostCard.astro';
+import type { Writing } from '../lib/content';
+interface Props {
+  entries: Writing[];
+  kind: 'blog' | 'knowledge';
+  categories?: string[];
+}
+const { entries, kind, categories = [] } = Astro.props;
+const allCategories = [...new Set([...categories, ...entries.map((e) => e.data.category)])];
+const tags = [...new Set(entries.flatMap((e) => e.data.tags))];
+---
+
+<content-explorer data-page-size="6">
+  <form class="search-toolbar" role="search">
+    <label class="search-field">
+      <span aria-hidden="true">⌕</span>
+      <span class="sr-only">搜索标题、摘要、标签</span>
+      <input type="search" name="q" placeholder="搜索标题、摘要或标签…" autocomplete="off" />
+    </label>
+    <label class="tag-select">
+      <span>标签</span>
+      <select name="tag" aria-label="按标签筛选">
+        <option value="">全部标签</option>
+        {tags.map((tag) => (
+          <option value={tag}>{tag}</option>
+        ))}
+      </select>
+    </label>
+  </form>
+  <div class="filter-tabs" aria-label="按分类筛选">
+    <button type="button" data-category="" aria-pressed="true">
+      全部 <span>{entries.length}</span>
+    </button>
+    {allCategories.map((c) => (
+      <button type="button" data-category={c} aria-pressed="false">
+        {c} <span>{entries.filter((e) => e.data.category === c).length}</span>
+      </button>
+    ))}
+  </div>
+  <p class="search-count small-note" role="status" aria-live="polite">
+    {entries.length} 篇内容 · 按发布时间排序
+  </p>
+  <div class:list={['explorer-grid', { 'knowledge-grid': kind === 'knowledge' }]}>
+    {entries.map((entry) => (
+      <div
+        data-entry
+        data-category={entry.data.category}
+        data-tags={JSON.stringify(entry.data.tags)}
+        data-search={`${entry.data.title} ${entry.data.description} ${entry.data.tags.join(' ')}`}
+      >
+        {kind === 'knowledge' && 'maturity' in entry.data && (
+          <span class="maturity">◌ {entry.data.maturity}</span>
+        )}
+        <PostCard entry={entry} kind={kind} />
+      </div>
+    ))}
+  </div>
+  <p class="empty-state" hidden>
+    没有找到匹配内容。试试其他关键词，或清除筛选。
+  </p>
+  <div class="pagination" hidden>
+    <button type="button" data-prev>
+      ← 上一页
+    </button>
+    <span data-page></span>
+    <button type="button" data-next>
+      下一页 →
+    </button>
+  </div>
+  <noscript>
+    <p>当前显示全部公开内容。开启 JavaScript 后可使用本地搜索、筛选与分页。</p>
+  </noscript>
+</content-explorer>
+<script>
+  import { filterEntries, paginate } from '../lib/search.mjs';
+  class ContentExplorer extends HTMLElement {
+    connectedCallback() {
+      const cards = Array.from(this.querySelectorAll<HTMLElement>('[data-entry]'));
+      const input = this.querySelector<HTMLInputElement>('input')!;
+      const tag = this.querySelector<HTMLSelectElement>('select')!;
+      let category = '',
+        page = 1;
+      const params = new URLSearchParams(location.search);
+      input.value = params.get('q') || '';
+      tag.value = params.get('tag') || '';
+      const requestedCategory = params.get('category') || '';
+      if (
+        Array.from(this.querySelectorAll<HTMLElement>('[data-category]')).some(
+          (b) => b.matches('button') && b.dataset.category === requestedCategory,
+        )
+      )
+        category = requestedCategory;
+      const buttons = Array.from(this.querySelectorAll<HTMLButtonElement>('button[data-category]'));
+      const update = (save = true) => {
+        const records = cards.map((card) => ({
+          search: card.dataset.search || '',
+          category: card.dataset.category || '',
+          tags: JSON.parse(card.dataset.tags || '[]'),
+        }));
+        const filtered = filterEntries(records, { query: input.value, category, tag: tag.value });
+        const matches = cards.filter((_, i) => filtered.includes(records[i]));
+        const result = paginate(matches, page, Number(this.dataset.pageSize));
+        page = result.page;
+        cards.forEach((card) => {
+          card.hidden = !result.items.includes(card);
+        });
+        this.querySelector<HTMLElement>('.empty-state')!.hidden = matches.length > 0;
+        this.querySelector('.search-count')!.textContent =
+          `${matches.length} 篇内容 · 按发布时间排序`;
+        this.querySelector<HTMLElement>('.pagination')!.hidden = result.pages <= 1;
+        this.querySelector('[data-page]')!.textContent = `${page} / ${result.pages}`;
+        this.querySelector<HTMLButtonElement>('[data-prev]')!.disabled = page <= 1;
+        this.querySelector<HTMLButtonElement>('[data-next]')!.disabled = page >= result.pages;
+        buttons.forEach((b) =>
+          b.setAttribute('aria-pressed', String(b.dataset.category === category)),
+        );
+        if (save) {
+          const next = new URL(location.href);
+          for (const [key, val] of Object.entries({
+            q: input.value.trim(),
+            category,
+            tag: tag.value,
+          })) {
+            if (val) next.searchParams.set(key, val);
+            else next.searchParams.delete(key);
+          }
+          history.replaceState(null, '', next);
+        }
+      };
+      this.querySelector('form')!.addEventListener('submit', (e) => {
+        e.preventDefault();
+        page = 1;
+        update();
+      });
+      input.addEventListener('input', () => {
+        page = 1;
+        update();
+      });
+      tag.addEventListener('change', () => {
+        page = 1;
+        update();
+      });
+      buttons.forEach((b) =>
+        b.addEventListener('click', () => {
+          category = b.dataset.category!;
+          page = 1;
+          update();
+        }),
+      );
+      this.querySelector('[data-prev]')!.addEventListener('click', () => {
+        page--;
+        update();
+      });
+      this.querySelector('[data-next]')!.addEventListener('click', () => {
+        page++;
+        update();
+      });
+      update(false);
+    }
+  }
+  customElements.define('content-explorer', ContentExplorer);
+</script>

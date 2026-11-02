@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/content';
+---
+
+<Base title="404 · 页面未找到" description="这条小路暂时没有通向任何地方。" noindex>
+  <section class="not-found">
+    <p class="eyebrow">A LITTLE DETOUR / 404</p>
+    <h1>
+      Not all paths
+      <br />
+      <em>lead somewhere.</em>
+    </h1>
+    <p>这页可能搬了家，或者还没有被写下。</p>
+    <a class="button" href={url('/')}>
+      回到首页 ↗
+    </a>
+  </section>
+</Base>

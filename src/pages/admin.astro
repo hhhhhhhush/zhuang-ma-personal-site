@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeading from '../components/PageHeading.astro';
+---
+
+<Base title="内容管理" description="通过 Pages CMS 安全管理 Git 仓库中的公开内容。" noindex>
+  <PageHeading
+    label="FOR THE SITE OWNER"
+    title="A quiet place to edit."
+    description="内容管理由 Pages CMS 提供。这不是自制的静态后台；真实编辑需要 GitHub 授权及仓库连接。"
+  />
+  <section class="prose standalone">
+    <h2>登录可视化编辑器</h2>
+    <p>
+      将网站推送到你的 GitHub 仓库后，在 Pages CMS 中使用 GitHub
+      登录，只为这个仓库授权，然后选择部署分支。后台将自动读取仓库根目录的 <code>.pages.yml</code>。
+    </p>
+    <p>
+      <a class="button" href="https://app.pagescms.org" target="_blank" rel="noopener noreferrer">
+        打开 Pages CMS ↗
+      </a>
+    </p>
+    <h2>你可以管理</h2>
+    <ul>
+      <li>个人简介、头像、邮箱和公开社交链接</li>
+      <li>博客和知识笔记：草稿、发布、下架、分类和图片</li>
+      <li>项目、截图、技术栈与展示顺序</li>
+      <li>资源书架、网站设置与导航</li>
+    </ul>
+    <h2>安全边界</h2>
+    <p>
+      普通访客不能编辑本站。编辑权限由 GitHub 仓库及 Pages CMS GitHub App 控制；前台不持有
+      Token。所有 Git 仓库内容都应视为可能公开，私密内容不得放入草稿或媒体目录。
+    </p>
+    <p>首次连接、CMS 写入与线上自动部署需要所有者实际授权，尚不能在本地替你验证。</p>
+  </section>
+</Base>

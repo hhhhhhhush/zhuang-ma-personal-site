@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import { render } from 'astro:content';
+import { projects, url, dateLabel } from '../../lib/content';
+export async function getStaticPaths() {
+  return (await projects()).map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Base
+  title={entry.data.seoTitle || entry.data.title}
+  description={entry.data.seoDescription || entry.data.description}
+  image={entry.data.cover}
+>
+  <header class="article-heading">
+    <a class="back-link" href={url('/projects/')}>
+      ← 全部项目
+    </a>
+    <p class="eyebrow">{entry.data.projectStatus}</p>
+    <h1>{entry.data.title}</h1>
+    <p>{entry.data.description}</p>
+    <div class="tags">
+      {entry.data.stack.map((t) => (
+        <span>{t}</span>
+      ))}
+    </div>
+    <div class="hero-actions">
+      {entry.data.github && (
+        <a class="button" href={entry.data.github} target="_blank" rel="noopener noreferrer">
+          GitHub ↗
+        </a>
+      )}
+      {entry.data.demo && (
+        <a class="text-link" href={entry.data.demo} target="_blank" rel="noopener noreferrer">
+          在线演示 ↗
+        </a>
+      )}
+    </div>
+    <p class="small-note">
+      {entry.data.started && `开始 ${dateLabel(entry.data.started)}`}
+      {entry.data.completed && ` · 完成 ${dateLabel(entry.data.completed)}`}
+    </p>
+  </header>
+  {entry.data.cover && (
+    <img
+      class="article-cover"
+      src={url(entry.data.cover)}
+      alt={entry.data.title}
+      width="1200"
+      height="640"
+    />
+  )}
+  <article class="prose standalone">
+    <Content />
+  </article>
+  {entry.data.screenshots.length > 0 && (
+    <section class="screenshot-grid">
+      {entry.data.screenshots.map((src, i) => (
+        <figure>
+          <img
+            src={url(src)}
+            alt={`${entry.data.title} 截图 ${i + 1}`}
+            width="1000"
+            height="650"
+            loading="lazy"
+          />
+          <figcaption>项目截图 {i + 1}</figcaption>
+        </figure>
+      ))}
+    </section>
+  )}
+</Base>

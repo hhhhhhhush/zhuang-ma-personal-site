@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import ContentExplorer from '../../components/ContentExplorer.astro';
+import { notes, site } from '../../lib/content';
+const entries = await notes();
+---
+
+<Base title="Knowledge · 知识花园" description="按主题整理的知识笔记，持续维护与生长。">
+  <PageHeading
+    number="03"
+    label="THE DIGITAL GARDEN"
+    title="A garden of small ideas."
+    description="不是每一条笔记都有结论。让知识连接，让理解随时间生长。"
+  />
+  <div class="garden-legend">
+    <span>◌ Seedling · 刚种下的想法</span>
+    <span>◒ Growing · 持续整理</span>
+    <span>● Evergreen · 相对成熟</span>
+  </div>
+  <ContentExplorer entries={entries} kind="knowledge" categories={site.knowledgeCategories} />
+</Base>

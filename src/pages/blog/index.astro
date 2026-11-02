@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import ContentExplorer from '../../components/ContentExplorer.astro';
+import { posts, url } from '../../lib/content';
+const entries = await posts();
+---
+
+<Base title="Blog · 手记" description="关于学习、技术与创造的公开手记。">
+  <PageHeading
+    number="01"
+    label="THE JOURNAL"
+    title="Notes along the way."
+    description="把想法写下来，把经历留下来。这里是学习与探索的切片。"
+  />
+  <div class="journal-notice">
+    <span>起步手记 / 示例内容</span>
+    <a href={url('/rss.xml')}>通过 RSS 订阅 ↗</a>
+  </div>
+  <ContentExplorer entries={entries} kind="blog" />
+</Base>

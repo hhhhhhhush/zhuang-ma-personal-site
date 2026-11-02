@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Astro",
+    "description": "内容优先的网站框架，也是这个空间的构建基础。",
+    "url": "https://astro.build",
+    "icon": "A",
+    "category": "Developer Tools",
+    "recommended": true
+  },
+  {
+    "name": "MDN Web Docs",
+    "description": "开放、系统的 Web 技术参考资料。",
+    "url": "https://developer.mozilla.org",
+    "icon": "M",
+    "category": "Learning Resources",
+    "recommended": true
+  },
+  {
+    "name": "Pages CMS",
+    "description": "通过 Git 管理内容的轻量可视化编辑器。",
+    "url": "https://pagescms.org",
+    "icon": "P",
+    "category": "Developer Tools",
+    "recommended": true
+  },
+  {
+    "name": "Hugging Face",
+    "description": "探索开放模型、数据集与机器学习实践。",
+    "url": "https://huggingface.co",
+    "icon": "H",
+    "category": "AI Tools",
+    "recommended": false
+  },
+  {
+    "name": "The Public Domain Review",
+    "description": "从公共领域的艺术、历史与文化中寻找灵感。",
+    "url": "https://publicdomainreview.org",
+    "icon": "R",
+    "category": "Design Resources",
+    "recommended": false
+  }
+]

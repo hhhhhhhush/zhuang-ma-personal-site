@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import { projects, url } from '../../lib/content';
+const entries = await projects();
+---
+
+<Base title="Projects · 实践" description="个人项目、开源探索与从零到一的实践记录。">
+  <PageHeading
+    number="02"
+    label="THE WORKBENCH"
+    title="Learning by making."
+    description="把想法变成可以触摸的东西。这里展示明确标注的起步示例，等待真实作品加入。"
+  />
+  <div class="project-grid">
+    {entries.map((entry, index) => (
+      <a class="project-tile" href={url(`/projects/${entry.id}/`)}>
+        <div class:list={['project-visual', `visual-${index % 2}`]}>
+          {entry.data.cover ? (
+            <img src={url(entry.data.cover)} alt="" width="800" height="440" loading="lazy" />
+          ) : (
+            <>
+              <span class="visual-index">EXAMPLE / 0{index + 1}</span>
+              <div class="visual-title">
+                {entry.data.title.replace('（示例）', '')}
+                <span>↗</span>
+              </div>
+              <span class="visual-caption">{entry.data.stack.join(' · ')}</span>
+              <div class="visual-lines" aria-hidden="true"></div>
+            </>
+          )}
+        </div>
+        <div class="project-caption">
+          <h2>{entry.data.title}</h2>
+          <span class="status">{entry.data.projectStatus}</span>
+        </div>
+        <p>{entry.data.description}</p>
+        <div class="tags">
+          {entry.data.stack.map((t) => (
+            <span>{t}</span>
+          ))}
+        </div>
+      </a>
+    ))}
+  </div>
+</Base>
