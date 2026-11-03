@@ -1,5 +1,5 @@
 {
-  "nameZh": "待填写中文姓名",
+  "nameZh": "马壮壮",
   "nameEn": "Zhuang Ma",
   "avatar": "/images/avatar/monogram.svg",
   "bio": "在这里记录学习、探索与创造。一个慢慢生长的个人数字空间。",
@@ -8,12 +8,22 @@
   "introduction": "你好，我是 Zhuang Ma。欢迎来到我的个人空间。这里将用来收藏想法、整理知识，以及分享从零到一的实践。",
   "introductionZh": "这是一份待完善的个人介绍。真实的教育、工作和学习经历将在本人确认后补充。",
   "introductionEn": "A personal space for learning in public, collecting ideas, and making useful things. Full biography coming soon.",
-  "email": "",
-  "github": "",
-  "skills": ["待填写 · 技能与工具"],
-  "interests": ["阅读", "创造", "终身学习"],
-  "focus": ["AI 与人工智能", "编程与开发", "知识管理"],
-  "learning": ["待填写 · 当前学习方向"],
+  "skills": [
+    "待填写 · 技能与工具"
+  ],
+  "interests": [
+    "阅读",
+    "创造",
+    "终身学习"
+  ],
+  "focus": [
+    "AI 与人工智能",
+    "编程与开发",
+    "知识管理"
+  ],
+  "learning": [
+    "待填写 · 当前学习方向"
+  ],
   "experiences": [
     {
       "period": "待填写",
