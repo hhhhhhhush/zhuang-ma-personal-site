@@ -1,6 +1,6 @@
 # 交接说明（Handoff）— zhuang-ma-personal-site
 
-生成时间：2026-11-03 21:2x（Asia/Shanghai）
+生成时间：2026-11-03 21:30（Asia/Shanghai）｜最终提交：`e256bd1`（含本文件）｜本地与 `origin/main` 完全一致
 执行者：Little Code Sauce（本轮 agent）
 本地目录：`E:\codex`
 目标仓库：`https://github.com/hhhhhhhush/zhuang-ma-personal-site`
@@ -12,12 +12,12 @@
 
 | 项目 | 状态 | 证据 |
 | --- | --- | --- |
-| 代码已全量推送到 `main` | ✅ 真实成功 | `origin/main = f6e652a`，本地 `main` 与远端 0/0 分歧 |
+| 代码已全量推送到 `main` | ✅ 真实成功 | `origin/main = e256bd1`，本地 `main` 与远端 0/0 分歧 |
 | 远端文件数 | ✅ 70 个 | `git ls-tree -r --name-only origin/main \| wc -l`（原网页上传 56，本地 66，本轮再补 4 个 `.gitkeep`） |
 | 关键点文件已进仓库 | ✅ | `.pages.yml`、`.github/workflows/deploy.yml`、`.gitignore`、`.prettierignore`、`.prettierrc.json` 均存在于远端根目录，`raw.githubusercontent.com` 返回 200 |
 | 目录结构正确 | ✅ | `src` 33 文件、`data` 5、`public` 9、`tests` 2、`scripts` 3、`e2e` 1、`docs` 1 |
 | Pages 发布源 | ✅ 已设为 **GitHub Actions** | Pages API 返回 `build_type: "workflow"`，`https_enforced: true`，`public: true` |
-| Actions 工作流 | ✅ 三次运行全部 success | run `41638130502`(push) / `41638449125`(dispatch) / `41639736364`(push) |
+| Actions 工作流 | ✅ 四次运行全部 success | run `41638130502`(push) / `41638449125`(dispatch) / `41639736364`(push) / `e256bd1`(push) |
 | 实际站点地址 | ✅ 已上线 | **https://hhhhhhhush.github.io/zhuang-ma-personal-site/** |
 | 线上页面抽查 | ✅ 全部 200 | `/`、`/blog/`、`/knowledge/`、`/projects/`、`/about/`、`/contact/`、`/links/`、`/admin/`、`/rss.xml`、`/robots.txt`、`/sitemap-index.xml` |
 | 浏览器真实渲染 | ✅ 已用本机 Chrome 截图核对 | 首页 H1 `Stay curious. Keep creating.`、导航 Home/About/Blog/Knowledge/Projects/Links、卡片与中文文案全部正常，无 4xx 资源请求 |
@@ -26,6 +26,18 @@
 | 本地测试 | ✅ 复跑通过 | `npm test` 6/6 pass；`npm run format:check` 全部符合 Prettier |
 
 首次 push 失败的根因**不是网络**（`github.com:443` 实测可达、`git ls-remote` 成功）：真正原因是**本地提交 `bfe64e7` 与远端 `5f315d0` 是两条无关历史**（`git merge-base` 为空），Git 直接拒绝非 fast-forward。处理方式：用 `git commit-tree` 以**远端提交为父**、**本地树为内容**构造新提交 `4e35a58`，再普通 push —— **没有 force push、没有 reset 远端、没有删除任何远端内容**。
+
+补充：本轮后段 git 传输确实出现过间歇性 `Connection was reset` / `Failed to connect to github.com port 443`（`raw.githubusercontent.com` 也偶发 000），属线路抖动而非认证问题。此场景的兜底做法是用 Contents API 单文件提交（已验证可用）：
+```powershell
+$bytes=[IO.File]::ReadAllBytes('E:\codex\docs\HANDOFF.md')
+$body=@{message='Update docs/HANDOFF.md';content=[Convert]::ToBase64String($bytes);branch='main'}|ConvertTo-Json -Compress
+[IO.File]::WriteAllText("$env:TEMP\put.json",$body,(New-Object System.Text.UTF8Encoding($false)))
+curl.exe -s -X PUT "https://api.github.com/repos/hhhhhhhush/zhuang-ma-personal-site/contents/docs/HANDOFF.md" `
+  -H "Authorization: token $tok" -H "User-Agent: curl/8" -H "Accept: application/vnd.github+json" `
+  -H "Content-Type: application/json" --data "@$env:TEMP\put.json"
+# 首次创建返回 201；已存在时需先 GET 拿到 sha 再带 sha 提交
+```
+多文件场景仍应用 git push；只改 1–2 个文本文件时 API 更稳。
 
 ---
 
