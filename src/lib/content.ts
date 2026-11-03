@@ -23,26 +23,29 @@ export const navigation = z
     }),
   )
   .parse((await import('../../data/navigation.json')).default);
+// Pages CMS 保存 JSON 时会丢弃值为空字符串的键。若这里把这些字段声明为必填，
+// 用户在 CMS 里清空任意字段都会导致构建抛 zod 校验错误（GitHub Actions 直接红）。
+// 因此所有文本字段都给出默认值，缺省时回落为空串/空数组，由页面自行判断是否渲染。
 export const profile = z
   .object({
-    nameZh: z.string(),
-    nameEn: z.string(),
-    avatar: imagePath,
-    bio: z.string(),
-    heroTitle: z.string(),
-    heroSubtitle: z.string(),
-    introduction: z.string(),
-    introductionZh: z.string(),
-    introductionEn: z.string(),
-    email: z.union([z.email(), z.literal('')]),
-    github: webUrl,
-    skills: z.array(z.string()),
-    interests: z.array(z.string()),
-    focus: z.array(z.string()),
-    learning: z.array(z.string()),
-    experiences: z.array(
-      z.object({ period: z.string(), title: z.string(), description: z.string() }),
-    ),
+    nameZh: z.string().default(''),
+    nameEn: z.string().default(''),
+    avatar: imagePath.default('/images/avatar/monogram.svg'),
+    bio: z.string().default(''),
+    heroTitle: z.string().default(''),
+    heroSubtitle: z.string().default(''),
+    introduction: z.string().default(''),
+    introductionZh: z.string().default(''),
+    introductionEn: z.string().default(''),
+    email: z.union([z.email(), z.literal('')]).default(''),
+    github: webUrl.default(''),
+    skills: z.array(z.string()).default([]),
+    interests: z.array(z.string()).default([]),
+    focus: z.array(z.string()).default([]),
+    learning: z.array(z.string()).default([]),
+    experiences: z
+      .array(z.object({ period: z.string(), title: z.string(), description: z.string() }))
+      .default([]),
   })
   .parse(profileData);
 export const site = z
