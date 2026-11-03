@@ -18,10 +18,14 @@ const imagePath = z
 export const navigation = z
   .array(
     z.object({
-      label: z.string(),
-      path: z.string().regex(/^\/(?!\/)[^?#]*\/?$|^\/$/, 'Use a root-relative site path'),
+      label: z.string().default(''),
+      path: z
+        .string()
+        .regex(/^\/(?!\/)[^?#]*\/?$|^\/$/, 'Use a root-relative site path')
+        .default('/'),
     }),
   )
+  .default([])
   .parse((await import('../../data/navigation.json')).default);
 // Pages CMS 保存 JSON 时会丢弃值为空字符串的键。若这里把这些字段声明为必填，
 // 用户在 CMS 里清空任意字段都会导致构建抛 zod 校验错误（GitHub Actions 直接红）。
@@ -50,36 +54,38 @@ export const profile = z
   .parse(profileData);
 export const site = z
   .object({
-    name: z.string(),
-    description: z.string(),
-    logo: imagePath,
-    favicon: imagePath,
-    defaultAvatar: imagePath,
-    seoTitle: z.string(),
-    ogImage: imagePath,
-    language: z.string(),
-    theme: z.enum(['system', 'light', 'dark']),
-    copyright: z.string(),
-    knowledgeCategories: z.array(z.string()),
-    resourceCategories: z.array(z.string()),
+    name: z.string().default(''),
+    description: z.string().default(''),
+    logo: imagePath.default(''),
+    favicon: imagePath.default(''),
+    defaultAvatar: imagePath.default('/images/avatar/monogram.svg'),
+    seoTitle: z.string().default(''),
+    ogImage: imagePath.default(''),
+    language: z.string().default('zh-CN'),
+    theme: z.enum(['system', 'light', 'dark']).default('system'),
+    copyright: z.string().default(''),
+    knowledgeCategories: z.array(z.string()).default([]),
+    resourceCategories: z.array(z.string()).default([]),
   })
   .parse(settings);
 export const socials = z
-  .array(z.object({ label: z.string(), url: webUrl }))
+  .array(z.object({ label: z.string().default(''), url: webUrl.default('') }))
+  .default([])
   .parse(socialsData)
   .filter((s) => s.url);
 export const resources = z
   .array(
     z.object({
-      name: z.string(),
-      description: z.string(),
-      url: webUrl,
-      icon: z.string(),
-      category: z.string(),
-      recommended: z.boolean(),
+      name: z.string().default(''),
+      description: z.string().default(''),
+      url: webUrl.default(''),
+      icon: z.string().default(''),
+      category: z.string().default(''),
+      recommended: z.boolean().default(false),
       iconImage: imagePath.optional(),
     }),
   )
+  .default([])
   .parse(resourcesData)
   .filter((r) => r.url);
 export const url = (path = '/') => withBase(path, import.meta.env.BASE_URL);
